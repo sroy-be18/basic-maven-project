@@ -1,0 +1,158 @@
+openapi: 3.0.3
+info:
+  title: Employee Management API
+  version: 1.0.0
+  description: API for managing employees
+
+servers:
+  - url: http://localhost:8080/api
+
+paths:
+  /employees:
+    get:
+      summary: Get all employees
+      operationId: getAllEmployees
+      responses:
+        '200':
+          description: List of employees
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Employee'
+
+    post:
+      summary: Create a new employee
+      operationId: createEmployee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeInput'
+      responses:
+        '201':
+          description: Employee created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+
+  /employees/{id}:
+    get:
+      summary: Get employee by ID
+      operationId: getEmployeeById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Employee found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+        '404':
+          description: Employee not found
+
+    put:
+      summary: Update an employee
+      operationId: updateEmployee
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeInput'
+      responses:
+        '200':
+          description: Employee updated
+        '404':
+          description: Employee not found
+
+    delete:
+      summary: Delete employee by ID
+      operationId: deleteEmployee
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Employee deleted
+        '404':
+          description: Employee not found
+
+components:
+  schemas:
+    Employee:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 101
+        name:
+          type: string
+          example: John Doe
+        email:
+          type: string
+          format: email
+          example: john.doe@example.com
+        department:
+          type: string
+          example: Engineering
+        salary:
+          type: number
+          format: double
+          example: 55000.50
+        createdAt:
+          type: string
+          format: date-time
+          example: '2024-01-01T10:00:00Z'
+      required:
+        - id
+        - name
+        - email
+        - department
+        - salary
+        - createdAt
+
+    EmployeeInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: John Doe
+        email:
+          type: string
+          format: email
+          example: john.doe@example.com
+          description: "Valid email address of the employee"
+        department:
+          type: string
+          default: General
+          example: IT
+        salary:
+          type: number
+          format: double
+          minimum: 10000
+          default: 30000
+          example: 50000
+      required:
+        - name
+        - email
